@@ -33,7 +33,27 @@ import com.example.marsphotos.ui.theme.MarsPhotosTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
+import com.example.marsphotos.network.MarsPhoto
 
+
+@Composable
+fun MarsPhotoCard(photo: MarsPhoto, modifier: Modifier = Modifier) {
+    AsyncImage(
+        model = ImageRequest.Builder(context = LocalContext.current)
+            .data(photo.imgSrc)
+            .crossfade(true)
+            .build(),
+        contentDescription = stringResource(R.string.mars_photo),
+        contentScale = ContentScale.Crop,
+        error = painterResource(R.drawable.ic_broken_image),
+        placeholder = painterResource(R.drawable.loading_img),
+        modifier = Modifier.fillMaxWidth()
+    )
+}
 @Composable
 fun HomeScreen(
     marsUiState: MarsUiState,
@@ -41,11 +61,10 @@ fun HomeScreen(
 ) {
     when (marsUiState) {
         is MarsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-        is MarsUiState.Success -> ResultScreen(
-            marsUiState.photos, modifier = modifier.fillMaxWidth()
-        )
+        is MarsUiState.Success -> MarsPhotoCard(photo = marsUiState.photos, modifier =modifier)
 
-        is MarsUiState.Error -> ErrorScreen( modifier = modifier.fillMaxSize())
+
+        else -> ErrorScreen( modifier = modifier.fillMaxSize())
     }
 }
 
